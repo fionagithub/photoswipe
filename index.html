@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <title>iScroll demo: simple</title>
+    <link href="photoswipe/default-skin/default-skin.css" rel="stylesheet">
+    <link href="photoswipe/photoswipe.css" rel="stylesheet">
+    <link href="photoswipe/site.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body ng-controller="MyCtrl">
+    <ng-photoswipe slides="slides" options="opts">
+    </ng-photoswipe>
+    <div id="demo-test-gallery" class="demo-gallery">
+        <a ng-repeat="i in slides track by $index">
+            <img ng-src=" {{ i.src }} " id=" {{i.index}} " ng-click="showImg(i)" itemprop="thumbnail" alt=" {{i.desc}} ">
+            <figcaption itemprop="caption description">{{i.desc}}</figcaption>
+        </a>
+    </div>
+    <script type="text/javascript" src="js/angular.js"></script>
+    <script type="text/javascript" src="photoswipe/photoswipe.js"></script>
+    <script type="text/javascript" src="photoswipe/photoswipe-ui-default.min.js"></script>
+    <script type="text/javascript">
+    var myApp = angular.module('myApp', [])
+        .directive('ngPhotoswipe', ngPhotoswipe);
+
+    function MyCtrl($scope) {
+        $scope.slides = [{
+            src: 'img/a.png',
+            w: 360,
+            h: 360,
+            index: 0,
+            title: 'aaaa' // <figcaption> content
+        }, {
+            src: 'img/b.jpg',
+            w: 1024,
+            h: 1024,
+            index: 1,
+            title: 'bbbb'
+        }, {
+            src: 'img/c.jpg',
+            w: 1024,
+            h: 1024,
+            index: 2,
+            title: 'ccc'
+        }];
+
+
+        // PhotoSwipe options 定义选项 (if needed) 
+        $scope.options = {
+            // optionName: 'option value'
+            // history & focus 选项被禁用
+            // Tap on sliding area should close gallery
+            /*    tapToClose: false,
+                tapToToggleControls: false, //控制栏点击后会消失
+                clickToCloseNonZoomable: true,
+                indexIndicatorSep: ' / ',*/
+            history: false,
+            focus: false,
+            showAnimationDuration: 0,
+            hideAnimationDuration: 0
+        };
+
+
+        //open and swipe photo gallery
+        $scope.showImg = function(obj) {
+            var pswpElement = document.querySelectorAll('.pswp')[0];
+            $scope.options.index = obj.index;
+            console.log('aaaa' + $scope.options);
+            var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, $scope.slides, $scope.options);
+
+            gallery.init();
+        };
+
+    }
+
+
+    function ngPhotoswipe($compile, $http, $templateCache) {
+        return {
+            restrict: 'AE',
+            replace: true,
+            scope: {
+                slides: '=',
+                options: '='
+            },
+            link: function(scope, iElement, iAttrs) {
+                $http.get('ng-photoswipe.html', { 
+                        cache: $templateCache
+                    })
+                    .success(function(html) {
+                        var template = angular.element(html);
+                        iElement.append($compile(template)(scope));
+                        console.log("aaaa")
+                    }).error(function() {
+                        console.log("ssss")
+                    });
+
+
+            },
+            controller: function() {}
+
+        }
+    };
+    </script>
+</body>
+
+</html>
